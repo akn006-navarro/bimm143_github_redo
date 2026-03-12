@@ -1,0 +1,19 @@
+---
+title: "Class 6"
+author: "Karolina Navarro A19106745"
+format: html
+---
+
+## Background
+
+
+All functions in R have at least 3 things:
+
+- A **name** that we use to call the function
+- One or more input **arguments**
+- The **body** the lines of R code that do the work
+
+
+## Our first function
+
+Let's write a silly wee function to add some numbers(the inpit arguments)

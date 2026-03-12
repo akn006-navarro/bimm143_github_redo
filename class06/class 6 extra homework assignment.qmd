@@ -1,0 +1,88 @@
+---
+Name: Ana Karolina Navarro A19106745
+title: "Class 6 function homework"
+format: pdf
+toc: true
+---
+
+Write a function from the supplied code
+
+```{r}
+
+# Can you improve this analysis code?
+
+library(bio3d)
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+```
+
+
+First I need to install it and then load it up...
+`install.packages("bio3d")` and then `library(bio3d)`
+
+```{r}
+library(bio3d)
+
+```
+
+All functions in R have at least 3 things:
+
+- A **name** that we use to call the function
+- One or more input **arguments**
+- The **body** the lines of R code that do the work
+
+An improved line of code to produce a more proper function may look like this
+
+The original codes shows operations (reading a PDB file, trimming, extracting and plotting B factors) that are repeating three times.
+
+This can be improved by putting these sequence of events or pipeline into a function().
+
+The Function lapply() is used to apply the function to each element of a list or a vector and return a list of the same length  into a vector.
+  
+
+```{r}
+
+
+library(bio3d)
+
+protein_interactions <- function(pdb_IDs,elety = "CA", chain = "A", length=3, plot=TRUE) 
+  {
+  
+pdb <- lapply(pdb_IDs, read.pdb)
+trimmed <- lapply(pdb, trim.pdb, elety = elety, chain = chain)
+Bfactors <- lapply(trimmed, function(protein) protein$atom$b)
+
+
+if (plot) {
+  for (i in seq_along(Bfactors)) {
+      plotb3(
+        Bfactors[[i]],
+        sse = trimmed[[i]],
+        typ = "l",
+        ylab = "B-factor",
+        main = pdb_IDs[i]
+        
+      )
+   }
+  
+}
+
+}
+
+
+
+  
+
+```
+
+
