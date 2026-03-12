@@ -19,6 +19,27 @@ My classwork for [BIMM143](https://bioboot.github.io/bimm143_W26/) at UC San Die
 
 -Class 10 [Structural Bioinformatics]()
 
+-Class 11 [Structural Bioinformatics (pt2. Focus on new AlphaFold2)]()
+
+-Class 12 [Genome informatics]()
+
+-Class 13 [Transcriptomics and the analysis of RNA-Seq data]()
+
+-Class 14 [RNA-Seq analysis mini-project]()
+
+-Class 15 [Hands-on with Git and GitHub]()
+
+-Class 16 [Essential UNIX for bioinformatics]()
+
+-Class 17 [Analyzing sequencing data in the cloud]()
+
+-Class 18 [Mini Project: Investigating Pertussis Resurgence]()
+
+-Class 19 [Mini Project: Cancer Mutation Analysis]()
+
+
+
+
 
 
 
