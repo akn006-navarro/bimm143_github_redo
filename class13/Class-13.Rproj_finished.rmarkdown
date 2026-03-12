@@ -1,0 +1,280 @@
+---
+author: "Ana Karolina Navarro (PID: A19106745)"
+title: "Class 13 - RNA Seq Data"
+format: pdf
+toc: True
+
+---
+
+## Background
+
+Today we will perform an RNASeq analysis of the effects of a common steroid on airway cells. 
+
+In paerticular, dexamethasone (herafter just called "dex") on different airway smooth muscle cell lines (ASM cells).
+
+## Data Import
+
+We need two different inputs:
+
+- **countData**: with genes in rows and experiments in columns
+- **colData**: meta data that described the columns in countData 
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", row.names=1)
+metadata <- read.csv("airway_metadata.csv")
+```
+
+```{r}
+head(counts)
+```
+
+```{r}
+metadata
+```
+
+
+> Q.1 How many genes are in this dataset?
+
+```{r}
+nrow(counts)
+```
+
+
+> Q.2 How many 'control' cell lines do we have?
+
+```{r}
+table(metadata$dex)
+```
+
+OR 
+
+```{r}
+sum(metadata$dex == "control")
+```
+
+## Differential Gene Expression
+
+
+We have 4 replicate drug treated and control (no drug) columns/experiments in our `counts` object.
+
+We want one "mean" value for each gene (rows) in "treated" (drug) and one mean value for each gene in "control" cols
+
+Step 1. Find all "control" columns
+Step 2. Extract these columns to a new object called `control.counts`
+Step 3. Then calculate the mean value for each gene
+
+> Q. How would you make either approach more robust? Is there a function that could help here?
+
+
+Step 1.
+```{r}
+
+contol.inds<- metadata$dex == "control"
+
+```
+Step 2.
+```{r}
+control.counts <- counts[ , contol.inds]
+control.counts
+```
+
+Step 3.
+```{r}
+control.means <- rowMeans(control.counts)
+```
+
+
+> Q Now do the same thing for the "treated" coulumns/experiments
+
+Step 1.
+```{r}
+
+treat.inds<- metadata$dex == "treated"
+
+```
+
+Step 2.
+```{r}
+treat.counts <- counts[ , treat.inds]
+treat.counts
+```
+
+Step 3.
+```{r}
+treat.means <- rowMeans(treat.counts)
+```
+
+
+Put these together for easy book-seeping as `meancounts`
+```{r}
+
+meancounts <- data.frame (control.means, treat.means)
+
+```
+
+> Q. Create a scatter plot showing the mean of the treated samples against the mean of the control samples. Your plot should look something like the following.
+
+```{r}
+plot (meancounts)
+```
+
+
+Let's log transform this count data:
+
+```{r}
+plot(meancounts, log = "xy")
+```
+
+
+**N.B.** We most often use log2 for this type of data as it makes the interpretation much more straightforward.
+
+
+Treated/Controlled is often called "fold-change".
+
+If there was no change we would have log2-fc of zero:
+```{r}
+log2(10/10)
+```
+
+If we had double the amount of transcript around we would have log2-fc of 1
+```{r}
+
+log2(20/10)
+
+```
+If we would have half as mcuh transciprt around we would have log2-fc of -1
+```{r}
+log2(5/10)
+```
+> Q. calculate a log2 fold change value for all our genes and add it as a new column to our `meancounts` object
+
+```{r}
+
+meancounts$log2f <- log2( meancounts$treat.means / meancounts$control.means )
+
+head(meancounts)
+
+```
+
+
+## DESeq analysis
+
+
+Let' do this analysis with an estimate of stastical signficance using the **DESeq2** pasckage. 
+
+```{r, message=FALSE}
+library(DESeq2)
+```
+
+
+
+DESeq (like many bioconductor oackages) wants its input data in a very specific way.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = counts, 
+                       colData = metadata, 
+                       design = ~dex)
+```
+
+
+## Run the DESeq analysis pipeline
+
+The main function `deseq()`
+```{r}
+
+dds <- DESeq(dds)
+results(dds)
+
+```
+
+```{r}
+
+res <- results(dds)
+res
+
+```
+## Volcano Plot
+
+This is a main summary results figure from these kinds of studies. It is a plot of Log2- fold-change vs P-value. 
+
+
+
+```{r}
+
+plot(res$log2FoldChange, 
+     res$padj)
+
+```
+
+Again this y-axis is highly skewed and needs log transforming and we can flip the y-axis with a minus sign so it looks lke every other volcano plot.
+
+```{r}
+plot(res$log2FoldChange,
+     -log(res$padj))
+abline(v=-2, col="red")
+abline(v=+2, col="red")
+abline(h=-log(0.05), col="red")
+```
+
+## Adding some color annotation
+
+
+Start with a default base color "grey"
+```{r}
+
+mycols <- rep("gray", nrow(res))
+mycols[ res$log2FoldChange > 2] <- "blue"
+mycols[ res$log2FoldChange < -2] <- "darkgreen"
+
+mycols[ res$padj >= 0.05 ] <-"gray"
+
+res$log2FoldChange > 2
+
+plot(res$log2FoldChange,
+     -log(res$padj),
+  col=mycols)
+
+abline(v=c(-2, +2), lty=2)
+abline(h=-log(0.05), lty=2)
+
+```
+
+
+> Q.Make a presentation quality ggplot version of this plot. Include clear axis labels, a clean theme, your custom colors, cut-off lines and a plot title.
+
+
+```{r}
+library(ggplot2)
+
+ggplot(res) +
+  aes(log2FoldChange, 
+     -log(padj)) + 
+  
+  geom_point(colour = mycols) +
+  labs(x="Log2 Fold-change",
+       y="-log Adjusted P-value",  
+       title = "Volcano Plot of Differential Gene Expression") +
+  
+   theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+    
+  )
+  
+
+```
+
+
+## Save our results
+
+Write a CSV file
+
+```{r}
+write.csv(res, file="results.csv")
+```
+
+
+
