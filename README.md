@@ -25,7 +25,7 @@ My classwork for [BIMM143](https://bioboot.github.io/bimm143_W26/) at UC San Die
 
 -Class 13 [Transcriptomics and the analysis of RNA-Seq data](class13/class13.md)
 
--Class 14 [RNA-Seq analysis mini-project]()
+-Class 14 [RNA-Seq analysis mini-project](class14/class14.md)
 
 -Class 15 [Hands-on with Git and GitHub]()
 
@@ -33,14 +33,9 @@ My classwork for [BIMM143](https://bioboot.github.io/bimm143_W26/) at UC San Die
 
 -Class 17 [Analyzing sequencing data in the cloud]()
 
--Class 18 [Mini Project: Investigating Pertussis Resurgence]()
+-Class 18 [Mini Project: Investigating Pertussis Resurgence](class18/class18.md)
 
 -Class 19 [Mini Project: Cancer Mutation Analysis]()
-
-
-
->>>>>>> 41d3bf77a1c1e1c62b43df1527683de70880c734
-
 
 
 
