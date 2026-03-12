@@ -39,10 +39,5 @@ My classwork for [BIMM143](https://bioboot.github.io/bimm143_W26/) at UC San Die
 
 
 
->>>>>>> 41d3bf77a1c1e1c62b43df1527683de70880c734
-
-
-
-
 
 
